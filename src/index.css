@@ -31,6 +31,8 @@
 html {
   overflow-x: hidden;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -279,6 +281,9 @@ a {
   font-size: clamp(1.55rem, 6vw, 2.35rem);
   line-height: 1.9;
   letter-spacing: 0.03em;
+  direction: rtl;
+  unicode-bidi: bidi-override;
+  text-align: center;
 }
 
 .crescent-mark {
@@ -517,10 +522,12 @@ a {
   margin-top: 0.4rem;
   margin-bottom: -0.4rem;
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   align-items: center;
+  direction: rtl;
+  unicode-bidi: bidi-override;
   background: radial-gradient(ellipse 300px 80px at center 70%, rgba(196, 155, 170, 0.13) 0%, transparent 72%);
 }
 
@@ -952,6 +959,9 @@ a {
   font-size: clamp(1.3rem, 5vw, 1.8rem);
   line-height: 1.9;
   letter-spacing: 0.025em;
+  direction: rtl;
+  unicode-bidi: bidi-override;
+  text-align: center;
   animation: duaBreathe 4s ease-in-out infinite;
 }
 

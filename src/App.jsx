@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ'
@@ -199,25 +199,19 @@ function BrideSilhouette() {
 }
 
 function BismillahReveal() {
-  const chars = useMemo(() => {
-    const letters = Array.from(BISMILLAH)
-    const center = (letters.length - 1) / 2
-    return letters.map((char, index) => ({ char, delay: Math.abs(index - center) * 0.025 }))
-  }, [])
-
   return (
-    <p className="bismillah-text" dir="rtl" aria-label={BISMILLAH}>
-      {chars.map(({ char, delay }, index) => (
-        <motion.span
-          key={`${char}-${index}`}
-          initial={{ opacity: 0, y: 12, scale: 0.94 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.3 + delay, duration: 0.45, ease: 'easeOut' }}
-        >
-          {char === ' ' ? '\u00A0' : char}
-        </motion.span>
-      ))}
-    </p>
+    <div style={{ direction: 'rtl', unicodeBidi: 'bidi-override', textAlign: 'center', width: '100%' }}>
+      <motion.p
+        className="bismillah-text"
+        dir="rtl"
+        lang="ar"
+        initial={{ opacity: 0, y: 12, scale: 0.94 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 0.3, duration: 0.55, ease: 'easeOut' }}
+      >
+        {BISMILLAH}
+      </motion.p>
+    </div>
   )
 }
 
@@ -355,7 +349,7 @@ function CardFront({ onOpen, opened }) {
       <FloralCorner position="br" />
       <FloralCorner position="bl" />
       <div className="closed-card-content">
-        <p className="closed-bismillah" dir="rtl">{BISMILLAH}</p>
+        <p className="closed-bismillah" dir="rtl" lang="ar">{BISMILLAH}</p>
         <CrescentMark />
         <p className="closed-subtitle">a wedding invitation</p>
         <p className="closed-monogram">Asjad · 2026</p>
@@ -383,7 +377,7 @@ function CardInside({ countdown }) {
 
         <RevealSection className="intro-section" delay={0.8}>
           <p className="intro-copy">
-            With the grace of <span className="word-allah">Allah ﷻ</span>
+            With the grace of <span className="word-allah">Allah</span>
             <br />
             and the joy of <i>two families coming together</i>,
           </p>
@@ -435,7 +429,7 @@ function CardInside({ countdown }) {
 
         <RevealSection className="footer-section" delay={3}>
           <p className="made-with-love">August 2026 · with so much love</p>
-          <p className="dua-text" dir="rtl">{DUA}</p>
+          <p className="dua-text" dir="rtl" lang="ar">{DUA}</p>
           <p className="dua-translation">"Our Lord, grant us from among our spouses and offspring comfort to our eyes"</p>
           <p className="surah">Surah Al-Furqan 25:74</p>
         </RevealSection>
@@ -565,7 +559,7 @@ export default function App() {
             exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.45 }}
           >
-            <p dir="rtl">{BISMILLAH}</p>
+            <p dir="rtl" lang="ar">{BISMILLAH}</p>
           </motion.div>
         ) : !animDone ? (
           <motion.div
@@ -580,7 +574,7 @@ export default function App() {
                 </div>
                 <div className={`card-preview ${opened ? 'shadow-sweep' : ''}`}>
                   <FloralArch />
-                  <p dir="rtl">{BISMILLAH}</p>
+                  <p dir="rtl" lang="ar">{BISMILLAH}</p>
                 </div>
               </div>
             </div>
