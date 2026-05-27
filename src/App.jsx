@@ -314,6 +314,7 @@ function EventCard({ event }) {
 
 function CardFront({ onOpen, opened }) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
+  const touchStartY = useRef(null)
 
   function handleMouseMove(event) {
     if (opened) return
@@ -323,6 +324,20 @@ function CardFront({ onOpen, opened }) {
     setTilt({ x: Math.max(-6, Math.min(6, x)), y: Math.max(-6, Math.min(6, y)) })
   }
 
+  function handleCardTouchStart(event) {
+    touchStartY.current = event.touches[0]?.clientY ?? null
+  }
+
+  function handleCardTouchEnd(event) {
+    if (touchStartY.current == null) return
+    const endY = event.changedTouches[0]?.clientY ?? touchStartY.current
+    if (Math.abs(endY - touchStartY.current) >= 10) {
+      // Finger moved — this was a scroll, not a tap. Suppress the ghost click.
+      event.preventDefault()
+    }
+    touchStartY.current = null
+  }
+
   return (
     <button
       className="closed-card"
@@ -330,6 +345,8 @@ function CardFront({ onOpen, opened }) {
       onClick={onOpen}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setTilt({ x: 0, y: 0 })}
+      onTouchStart={handleCardTouchStart}
+      onTouchEnd={handleCardTouchEnd}
       style={{ '--tilt-x': `${tilt.x}deg`, '--tilt-y': `${tilt.y}deg` }}
       aria-label="Open wedding invitation"
     >
@@ -588,6 +605,9 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.55, ease: 'easeOut' }}
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
           >
             <CardInside countdown={countdown} />
           </motion.div>

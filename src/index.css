@@ -372,7 +372,11 @@ a {
 
 .content-view {
   width: 100%;
+  height: 100vh;
   padding: 1.35rem 0.9rem 2rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .open-card {
