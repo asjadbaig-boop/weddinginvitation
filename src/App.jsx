@@ -1,47 +1,48 @@
 import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useInView } from 'framer-motion'
 
 const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ'
 const DUA = 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ'
-const NIKAH_DATE = '2026-08-20T10:00:00+05:30'
+const NIKAH_DATE = '2026-08-20T00:00:00+05:30'
 
 const nikahCalLink =
-  'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Asjad%27s+Nikah&dates=20260820T043000Z/20260820T073000Z&details=Come+celebrate+the+Nikah+of+Asjad+with+us&location=Berhampur+Indoor+Hall%2C+Berhampur%2C+Odisha'
+  'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Asjad%27s+Nikah&dates=20260820T000000/20260820T235900&details=Nikah+Ceremony&location=Berhampur+Indoor+Hall+Berhampur+Odisha'
 const receptionCalLink =
-  'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Asjad%27s+Reception&dates=20260823T133000Z/20260823T163000Z&details=Come+celebrate+the+Reception+of+Asjad+with+us&location=Function+Palace%2C+Berhampur%2C+Odisha'
+  'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Asjad%27s+Reception&dates=20260823T000000/20260823T235900&details=Reception+Ceremony&location=Function+Palace+Berhampur+Odisha'
 
 const events = [
   {
-    icon: '🌸',
+    label: 'N I K A H',
     title: 'Nikah',
-    day: 'Wednesday',
-    date: 'August 20, 2026',
-    venue: 'at Berhampur Indoor Hall',
-    city: 'Berhampur, Odisha',
+    day: 'Wednesday, August 20, 2026',
+    venue: 'Berhampur Indoor Hall, Berhampur',
     map: 'https://www.google.com/maps/search/Berhampur+Indoor+Hall+Berhampur+Odisha',
-    lean: 'left',
   },
   {
-    icon: '🌸',
+    label: 'R E C E P T I O N',
     title: 'Reception',
-    day: 'Saturday',
-    date: 'August 23, 2026',
-    venue: 'at Function Palace',
-    city: 'Berhampur, Odisha',
+    day: 'Saturday, August 23, 2026',
+    venue: 'Function Palace, Berhampur',
     map: 'https://www.google.com/maps/search/Function+Palace+Berhampur+Odisha',
-    lean: 'right',
   },
 ]
 
-const petals = Array.from({ length: 18 }, (_, index) => ({
-  id: index,
-  left: `${(index * 31 + 7) % 100}%`,
-  delay: `${(index * 1.1) % 11}s`,
-  duration: `${10 + (index % 10)}s`,
-  drift: `${index % 2 === 0 ? 42 + index * 2 : -34 - index}px`,
-  color: ['#FFCDD2', '#F8BBD0', '#E8A0B0'][index % 3],
-  rotate: `${(index * 47) % 360}deg`,
+const PETAL_COLORS = ['#F5C6C6', '#F0B8C8', '#EDD5C0', '#F7D4D4']
+const PETAL_SIZES  = [8, 10, 12, 14, 16, 18, 10, 12, 8, 14, 16, 10, 12, 18, 8, 14]
+
+const petalData = Array.from({ length: 16 }, (_, i) => ({
+  id:      i,
+  left:    `${(i * 31 + 7) % 100}%`,
+  delay:   `${(i * 1.3) % 12}s`,
+  duration:`${12 + (i % 9)}s`,
+  drift:   `${i % 2 === 0 ? 40 + i * 2 : -32 - i * 1.5}px`,
+  color:   PETAL_COLORS[i % 4],
+  rotate:  `${(i * 47) % 360}deg`,
+  size:    PETAL_SIZES[i],
+  opacity: 0.5 + (i % 3) * 0.1,
 }))
+
+// ─── Countdown hook ───────────────────────────────────────────────────────────
 
 function useCountdown(targetDate) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
@@ -50,13 +51,12 @@ function useCountdown(targetDate) {
     function calc() {
       const diff = Math.max(new Date(targetDate).getTime() - Date.now(), 0)
       setTimeLeft({
-        days: Math.floor(diff / 86400000),
-        hours: Math.floor((diff % 86400000) / 3600000),
+        days:    Math.floor(diff / 86400000),
+        hours:   Math.floor((diff % 86400000) / 3600000),
         minutes: Math.floor((diff % 3600000) / 60000),
         seconds: Math.floor((diff % 60000) / 1000),
       })
     }
-
     calc()
     const id = setInterval(calc, 1000)
     return () => clearInterval(id)
@@ -65,6 +65,8 @@ function useCountdown(targetDate) {
   return timeLeft
 }
 
+// ─── Paper rustle sound ───────────────────────────────────────────────────────
+
 function playPaperRustle() {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext
@@ -72,12 +74,10 @@ function playPaperRustle() {
     const ctx = new AudioContext()
     const buffer = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate)
     const data = buffer.getChannelData(0)
-    for (let i = 0; i < data.length; i += 1) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / data.length)
-    }
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length)
     const source = ctx.createBufferSource()
     const filter = ctx.createBiquadFilter()
-    const gain = ctx.createGain()
+    const gain   = ctx.createGain()
     filter.type = 'highpass'
     filter.frequency.value = 900
     gain.gain.value = 0.15
@@ -88,151 +88,164 @@ function playPaperRustle() {
     source.start()
     source.stop(ctx.currentTime + 0.08)
   } catch {
-    // Audio feedback is decorative; silently skip when blocked.
+    // decorative — silently skip
   }
 }
 
-function FloralCorner({ position }) {
+// ─── SVG Components ───────────────────────────────────────────────────────────
+
+function FloralCorner({ position, size = 70 }) {
+  const posMap = {
+    tl: { top: '-4px',   left:  '-4px',  transform: 'rotate(0deg)' },
+    tr: { top: '-4px',   right: '-4px',  transform: 'rotate(90deg)' },
+    br: { bottom: '-4px',right: '-4px',  transform: 'rotate(180deg)' },
+    bl: { bottom: '-4px',left:  '-4px',  transform: 'rotate(270deg)' },
+  }
   return (
-    <svg className={`floral-corner ${position}`} viewBox="0 0 90 90" aria-hidden="true">
-      <path className="stem" d="M12 76C24 58 38 42 75 17" />
-      <path className="stem" d="M20 72C27 61 30 52 29 39" />
-      <path className="stem" d="M41 48C52 49 61 45 70 35" />
-      <ellipse className="leaf" cx="29" cy="39" rx="5" ry="12" transform="rotate(-30 29 39)" />
-      <ellipse className="leaf" cx="56" cy="42" rx="5" ry="12" transform="rotate(55 56 42)" />
-      <g className="flower" transform="translate(69 20)">
-        <circle r="4" />
-        <ellipse rx="5" ry="9" transform="rotate(0)" />
-        <ellipse rx="5" ry="9" transform="rotate(72)" />
-        <ellipse rx="5" ry="9" transform="rotate(144)" />
-        <ellipse rx="5" ry="9" transform="rotate(216)" />
-        <ellipse rx="5" ry="9" transform="rotate(288)" />
-      </g>
-      <g className="flower small" transform="translate(28 61)">
-        <circle r="3" />
-        <ellipse rx="4" ry="7" transform="rotate(0)" />
-        <ellipse rx="4" ry="7" transform="rotate(90)" />
-        <ellipse rx="4" ry="7" transform="rotate(180)" />
-        <ellipse rx="4" ry="7" transform="rotate(270)" />
-      </g>
-      <circle className="bud" cx="46" cy="42" r="3" />
-      <circle className="bud" cx="38" cy="55" r="2.4" />
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 70 70"
+      aria-hidden="true"
+      style={{ position: 'absolute', pointerEvents: 'none', zIndex: 3, ...posMap[position] }}
+    >
+      <circle cx="12" cy="12" r="5"   fill="#F0C4C4" opacity="0.8" />
+      <circle cx="22" cy="8"  r="3.5" fill="#C97B8A" opacity="0.6" />
+      <circle cx="8"  cy="22" r="3"   fill="#F5D4D4" opacity="0.7" />
+      <line x1="12" y1="12" x2="35" y2="35" stroke="#C97B8A" strokeWidth="1"   opacity="0.3" />
+      <line x1="22" y1="8"  x2="35" y2="35" stroke="#C97B8A" strokeWidth="0.8" opacity="0.25" />
+      <line x1="8"  y1="22" x2="35" y2="35" stroke="#C97B8A" strokeWidth="0.8" opacity="0.25" />
+      <circle cx="18" cy="6"  r="2" fill="#E8A0B0" opacity="0.5" />
+      <circle cx="6"  cy="18" r="2" fill="#E8A0B0" opacity="0.5" />
+    </svg>
+  )
+}
+
+function CrescentIcon() {
+  return (
+    <div className="crescent-wrapper">
+      <div className="crescent-glow" />
+      <svg width="60" height="72" viewBox="0 0 60 72" fill="none" aria-hidden="true">
+        <path
+          d="M38 8C24 8 13 20 13 36C13 52 24 64 38 64
+             C30 64 21 57 19 47C17 37 22 26 31 21
+             C35 18 40 17 44 17C42 14 40 10 38 8Z"
+          fill="#C97B8A"
+        />
+        <circle cx="46" cy="17" r="5" fill="#C97B8A" />
+      </svg>
+    </div>
+  )
+}
+
+function CoverDivider() {
+  return (
+    <svg
+      width="120"
+      height="24"
+      viewBox="0 0 120 24"
+      aria-hidden="true"
+      style={{ display: 'block', margin: '14px auto' }}
+    >
+      <line x1="2"  y1="12" x2="50"  y2="12" stroke="#C97B8A" strokeWidth="0.8" opacity="0.5" />
+      <line x1="70" y1="12" x2="118" y2="12" stroke="#C97B8A" strokeWidth="0.8" opacity="0.5" />
+      <circle cx="60" cy="12" r="3" fill="#C97B8A" opacity="0.7" />
+      <path d="M60 7 C62 9 62 15 60 17 C58 15 58 9 60 7Z"    fill="#F0C4C4" opacity="0.9" />
+      <path d="M55 12 C57 9 63 9 65 12 C63 15 57 15 55 12Z"  fill="#F0C4C4" opacity="0.9" />
     </svg>
   )
 }
 
 function FloralArch() {
   return (
-    <svg className="floral-arch" viewBox="0 0 420 120" aria-hidden="true">
-      <path className="arch-stem" d="M34 94C92 32 160 18 210 36C260 18 328 32 386 94" />
-      <path className="arch-stem" d="M94 54C104 76 122 88 148 91" />
-      <path className="arch-stem" d="M326 54C316 76 298 88 272 91" />
-      {[78, 126, 294, 342].map((x, i) => (
-        <g className="arch-rose" transform={`translate(${x} ${i % 2 ? 45 : 67})`} key={x}>
-          <circle r="5" />
-          <path d="M0-13C8-10 12-4 10 3C3 12-7 11-11 2C-13-6-8-11 0-13Z" />
-          <path d="M-10 1C-5-7 5-7 10 1" />
-        </g>
+    <svg
+      className="floral-arch"
+      viewBox="0 0 420 80"
+      width="100%"
+      height="80"
+      aria-hidden="true"
+      style={{ display: 'block', overflow: 'visible' }}
+    >
+      {/* Left branch */}
+      <path d="M10 78 Q80 40 210 18" fill="none" stroke="#C97B8A" strokeWidth="1.5" opacity="0.5" strokeLinecap="round" />
+      {/* Right branch */}
+      <path d="M410 78 Q340 40 210 18" fill="none" stroke="#C97B8A" strokeWidth="1.5" opacity="0.5" strokeLinecap="round" />
+
+      {/* Left branch: 5 blush-mid circles sizes 6,5,4,5,6 */}
+      {[[52,64,6],[100,50,5],[148,38,4],[178,29,5],[204,21,6]].map(([x,y,r],i) => (
+        <circle key={`lb${i}`} cx={x} cy={y} r={r} fill="#F0C4C4" />
       ))}
-      {[108, 156, 190, 230, 264, 312].map((x, i) => (
-        <ellipse
-          className="arch-leaf"
-          key={x}
-          cx={x}
-          cy={i % 2 ? 43 : 57}
-          rx="6"
-          ry="15"
-          transform={`rotate(${i % 2 ? -48 : 48} ${x} ${i % 2 ? 43 : 57})`}
-        />
+      {/* Right branch: 5 blush-mid circles */}
+      {[[368,64,6],[320,50,5],[272,38,4],[242,29,5],[216,21,6]].map(([x,y,r],i) => (
+        <circle key={`rb${i}`} cx={x} cy={y} r={r} fill="#F0C4C4" />
       ))}
-      <circle className="arch-bud" cx="210" cy="34" r="4" />
-      <circle className="arch-bud" cx="176" cy="37" r="2.6" />
-      <circle className="arch-bud" cx="244" cy="37" r="2.6" />
+
+      {/* Left: 3 rose accent circles above */}
+      {[[82,42],[132,30],[170,22]].map(([x,y],i) => (
+        <circle key={`la${i}`} cx={x} cy={y} r="4" fill="#C97B8A" opacity="0.6" />
+      ))}
+      {/* Right: 3 rose accent circles above */}
+      {[[338,42],[288,30],[250,22]].map(([x,y],i) => (
+        <circle key={`ra${i}`} cx={x} cy={y} r="4" fill="#C97B8A" opacity="0.6" />
+      ))}
+
+      {/* Center rose where branches meet */}
+      <circle cx="210" cy="16" r="7" fill="#C97B8A" opacity="0.75" />
+      <path d="M210 8C213 11 213 21 210 23C207 21 207 11 210 8Z" fill="#F0C4C4" opacity="0.95" />
+      <path d="M202 16C205 12 215 12 218 16C215 20 205 20 202 16Z" fill="#F0C4C4" opacity="0.95" />
     </svg>
   )
 }
 
 function FloralDivider({ className = '' }) {
   return (
-    <svg className={`floral-divider ${className}`} viewBox="0 0 260 34" aria-hidden="true">
-      <path d="M10 17H102M158 17H250" />
-      <path d="M104 17C116 8 126 8 130 17C134 8 144 8 156 17C144 26 134 26 130 17C126 26 116 26 104 17Z" />
-      <ellipse cx="84" cy="13" rx="4" ry="10" transform="rotate(62 84 13)" />
-      <ellipse cx="176" cy="13" rx="4" ry="10" transform="rotate(-62 176 13)" />
-      <ellipse cx="98" cy="22" rx="4" ry="9" transform="rotate(-58 98 22)" />
-      <ellipse cx="162" cy="22" rx="4" ry="9" transform="rotate(58 162 22)" />
-      <circle cx="130" cy="17" r="3" />
-    </svg>
-  )
-}
-
-function CrescentMark() {
-  return (
-    <svg className="crescent-mark" width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-      <path d="M46 12C32 12 22 23 22 38C22 53 33 64 48 64C55 64 61 61 65 56C60 59 54 60 48 58C36 54 29 43 32 31C34 22 40 16 46 12Z" fill="#A0687A"/>
-      <path d="M56 16L58 22L64 23L59 27L61 33L56 30L51 33L53 27L48 23L54 22Z" fill="#A0687A"/>
-    </svg>
-  )
-}
-
-function GroomSilhouette() {
-  return (
-    <svg className="silhouette groom" viewBox="0 0 160 320" aria-hidden="true">
-      <path d="M80 20c19 0 32 14 32 34s-13 35-32 35-32-15-32-35 13-34 32-34Z" />
-      <path d="M43 94c19-12 55-12 74 0 12 32 16 92 11 190H32c-5-98-1-158 11-190Z" />
-      <path d="M49 104h62v176H49z" fill="none" stroke="currentColor" strokeWidth="4" />
-      <path d="M80 104v176M63 122h34M61 150h38M64 178h32" fill="none" stroke="#A0687A" strokeWidth="3" />
-      <path d="M31 124c-14 39-14 87-3 139M129 124c14 39 14 87 3 139" fill="none" stroke="currentColor" strokeWidth="16" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function BrideSilhouette() {
-  return (
-    <svg className="silhouette bride" viewBox="0 0 170 320" aria-hidden="true">
-      <path d="M86 26c30 6 47 36 41 73-4 25-18 43-41 55-23-12-37-30-41-55-6-37 11-67 41-73Z" />
-      <path d="M57 121c19 17 39 17 58 0 24 42 37 96 43 167H14c6-71 19-125 43-167Z" />
-      <path d="M45 146c-15 36-22 80-22 132M126 146c15 36 22 80 22 132" fill="none" stroke="currentColor" strokeWidth="18" strokeLinecap="round" />
-      <path d="M54 278c28-20 61-20 88 0" fill="none" stroke="#A0687A" strokeWidth="4" />
-    </svg>
-  )
-}
-
-function BismillahReveal() {
-  return (
-    <div style={{ direction: 'rtl', unicodeBidi: 'bidi-override', textAlign: 'center', width: '100%' }}>
-      <motion.p
-        className="bismillah-text"
-        dir="rtl"
-        lang="ar"
-        initial={{ opacity: 0, y: 12, scale: 0.94 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ delay: 0.3, duration: 0.55, ease: 'easeOut' }}
-      >
-        {BISMILLAH}
-      </motion.p>
-    </div>
-  )
-}
-
-function RevealSection({ children, className = '', delay = 0 }) {
-  return (
-    <motion.section
+    <svg
       className={className}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      viewBox="0 0 140 28"
+      width="140"
+      height="28"
+      aria-hidden="true"
+      style={{ display: 'block', margin: '28px auto', overflow: 'visible' }}
+    >
+      <line x1="2"   y1="14" x2="52"  y2="14" stroke="#C97B8A" strokeWidth="1" opacity="0.5" strokeLinecap="round" />
+      <line x1="88"  y1="14" x2="138" y2="14" stroke="#C97B8A" strokeWidth="1" opacity="0.5" strokeLinecap="round" />
+      {/* leaves */}
+      <ellipse cx="36"  cy="11" rx="4" ry="8"   transform="rotate(-45 36 11)"  fill="#C97B8A" opacity="0.3" />
+      <ellipse cx="26"  cy="17" rx="3" ry="6.5" transform="rotate(45 26 17)"   fill="#C97B8A" opacity="0.3" />
+      <ellipse cx="104" cy="11" rx="4" ry="8"   transform="rotate(45 104 11)"  fill="#C97B8A" opacity="0.3" />
+      <ellipse cx="114" cy="17" rx="3" ry="6.5" transform="rotate(-45 114 17)" fill="#C97B8A" opacity="0.3" />
+      <ellipse cx="60"  cy="12" rx="3" ry="5.5" transform="rotate(-38 60 12)"  fill="#C97B8A" opacity="0.3" />
+      <ellipse cx="80"  cy="12" rx="3" ry="5.5" transform="rotate(38 80 12)"   fill="#C97B8A" opacity="0.3" />
+      {/* center rose */}
+      <circle cx="70" cy="14" r="5" fill="#C97B8A" opacity="0.75" />
+      <path d="M70 8C72.5 10 72.5 18 70 20C67.5 18 67.5 10 70 8Z"    fill="#F0C4C4" opacity="0.95" />
+      <path d="M64 14C66.5 10 73.5 10 76 14C73.5 18 66.5 18 64 14Z"  fill="#F0C4C4" opacity="0.95" />
+    </svg>
+  )
+}
+
+// ─── Motion wrapper ───────────────────────────────────────────────────────────
+
+function RevealSection({ children, className = '', style }) {
+  return (
+    <motion.div
+      className={className}
+      style={style}
+      initial={{ opacity: 0, y: 25 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.18 }}
-      transition={{ duration: 0.6, ease: 'easeOut', delay }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.55, ease: 'easeOut' }}
     >
       {children}
-    </motion.section>
+    </motion.div>
   )
 }
 
+// ─── Countdown box ────────────────────────────────────────────────────────────
+
 function CountdownBox({ label, value }) {
-  const [changed, setChanged] = useState(false)
   const prev = useRef(value)
+  const [changed, setChanged] = useState(false)
 
   useEffect(() => {
     if (prev.current !== value) {
@@ -241,7 +254,6 @@ function CountdownBox({ label, value }) {
       prev.current = value
       return () => clearTimeout(id)
     }
-    return undefined
   }, [value])
 
   return (
@@ -250,11 +262,11 @@ function CountdownBox({ label, value }) {
         <AnimatePresence mode="popLayout">
           <motion.span
             key={value}
-            className={`count-number ${changed ? 'is-rolling' : ''}`}
+            className="count-number"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.26, ease: 'easeOut' }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
           >
             {String(value ?? 0).padStart(2, '0')}
           </motion.span>
@@ -265,69 +277,88 @@ function CountdownBox({ label, value }) {
   )
 }
 
-function ConfettiButton({ href, children }) {
-  const [burst, setBurst] = useState(false)
+// ─── Personal message with animated underline ─────────────────────────────────
 
+function PersonalMessage() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, amount: 0.5 })
+
+  return (
+    <div className="message-box" ref={ref}>
+      <p className="message-text">
+        JazakAllah Khair for being part of this beautiful journey. it would mean
+        everything to have you there 💚
+      </p>
+      <motion.div
+        className="message-underline"
+        initial={{ width: '0%' }}
+        animate={isInView ? { width: '100%' } : {}}
+        transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.3 }}
+      />
+    </div>
+  )
+}
+
+// ─── Event card ───────────────────────────────────────────────────────────────
+
+function EventCard({ event }) {
+  return (
+    <article className="event-card">
+      <div className="event-header">
+        <span className="event-flower-icon">🌸</span>
+        <span className="event-label">{event.label}</span>
+      </div>
+      <h3 className="event-title">{event.title}</h3>
+      <div className="event-info-row">
+        <span className="event-row-icon">📅</span>
+        <span className="event-row-text">{event.day}</span>
+      </div>
+      <div className="event-info-row">
+        <span className="event-row-icon">📌</span>
+        <span className="event-row-text">{event.venue}</span>
+      </div>
+      <div className="event-card-sep" />
+      <a className="maps-btn" href={event.map} target="_blank" rel="noopener noreferrer">
+        📍 View on Google Maps
+      </a>
+    </article>
+  )
+}
+
+// ─── Calendar button with confetti ───────────────────────────────────────────
+
+function CalendarButton({ href, children }) {
+  const [burst, setBurst] = useState(false)
   function handleClick() {
     setBurst(true)
     setTimeout(() => setBurst(false), 650)
   }
-
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className="calendar-btn" onClick={handleClick}>
       {children}
       {burst && (
         <span className="confetti-burst" aria-hidden="true">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <i key={index} />
-          ))}
+          {Array.from({ length: 6 }).map((_, i) => <i key={i} />)}
         </span>
       )}
     </a>
   )
 }
 
-function EventCard({ event }) {
-  return (
-    <article className={`event-card ${event.lean}`}>
-      <div className="event-icon">{event.icon}</div>
-      <h3>{event.title}</h3>
-      <FloralDivider className="event-divider" />
-      <p className="event-day">{event.day}</p>
-      <p className="event-date">{event.date}</p>
-      <p className="event-venue">{event.venue}</p>
-      <p className="event-city">{event.city}</p>
-      <div className="venue-separator" />
-      <a className="maps-btn" href={event.map} target="_blank" rel="noopener noreferrer">
-        <span className="map-pin">📍</span>
-        <span>Open in Google Maps</span>
-      </a>
-    </article>
-  )
-}
+// ─── Cover card front ─────────────────────────────────────────────────────────
 
-function CardFront({ onOpen, opened }) {
-  const [tilt, setTilt] = useState({ x: 0, y: 0 })
+function CardFront({ onOpen }) {
   const touchStartY = useRef(null)
 
-  function handleMouseMove(event) {
-    if (opened) return
-    const rect = event.currentTarget.getBoundingClientRect()
-    const x = ((event.clientY - rect.top) / rect.height - 0.5) * -12
-    const y = ((event.clientX - rect.left) / rect.width - 0.5) * 12
-    setTilt({ x: Math.max(-6, Math.min(6, x)), y: Math.max(-6, Math.min(6, y)) })
+  function handleCardTouchStart(e) {
+    touchStartY.current = e.touches[0]?.clientY ?? null
   }
 
-  function handleCardTouchStart(event) {
-    touchStartY.current = event.touches[0]?.clientY ?? null
-  }
-
-  function handleCardTouchEnd(event) {
+  function handleCardTouchEnd(e) {
     if (touchStartY.current == null) return
-    const endY = event.changedTouches[0]?.clientY ?? touchStartY.current
-    if (Math.abs(endY - touchStartY.current) >= 10) {
-      // Finger moved — this was a scroll, not a tap. Suppress the ghost click.
-      event.preventDefault()
+    const endY = e.changedTouches[0]?.clientY ?? touchStartY.current
+    if (Math.abs(endY - touchStartY.current) >= 12) {
+      e.preventDefault()
     }
     touchStartY.current = null
   }
@@ -337,153 +368,178 @@ function CardFront({ onOpen, opened }) {
       className="closed-card"
       type="button"
       onClick={onOpen}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => setTilt({ x: 0, y: 0 })}
       onTouchStart={handleCardTouchStart}
       onTouchEnd={handleCardTouchEnd}
-      style={{ '--tilt-x': `${tilt.x}deg`, '--tilt-y': `${tilt.y}deg` }}
       aria-label="Open wedding invitation"
     >
       <FloralCorner position="tl" />
       <FloralCorner position="tr" />
       <FloralCorner position="br" />
       <FloralCorner position="bl" />
+      <div className="closed-inner-border" />
       <div className="closed-card-content">
         <p className="closed-bismillah" dir="rtl" lang="ar">{BISMILLAH}</p>
-        <CrescentMark />
+        <CrescentIcon />
+        <CoverDivider />
         <p className="closed-subtitle">a wedding invitation</p>
         <p className="closed-monogram">Asjad · 2026</p>
       </div>
-      <span className="card-shimmer" />
     </button>
   )
 }
 
-function CardInside({ countdown }) {
+// ─── Inner invitation content ─────────────────────────────────────────────────
+
+function InnerContent({ countdown }) {
   return (
-    <div className="open-card">
-      <FloralCorner position="tl" />
-      <FloralCorner position="tr" />
-      <FloralCorner position="br" />
-      <FloralCorner position="bl" />
-      <GroomSilhouette />
-      <BrideSilhouette />
+    <div className="inner-content">
 
-      <div className="open-card-content">
-        <RevealSection className="bismillah-section" delay={0.3}>
-          <FloralArch />
-          <BismillahReveal />
-        </RevealSection>
+      {/* 1 — Floral arch */}
+      <RevealSection className="arch-section">
+        <FloralArch />
+      </RevealSection>
 
-        <RevealSection className="intro-section" delay={0.8}>
-          <p className="intro-copy">
-            With the grace of <span className="word-allah">Allah</span>
-            <br />
-            and the joy of <i>two families coming together</i>,
-          </p>
-          <p className="invite-line">
-            we joyfully invite you to <i>witness and celebrate</i>
-          </p>
-          <p className="nikah-of">
-            the <span className="word-nikah">Nikah</span> of
-          </p>
-          <h1 className="name-shimmer">Asjad</h1>
-          <p className="bride-connector">with the daughter of</p>
-          <p className="bride-father">Mohammed Nishat (Gopalpur)</p>
-        </RevealSection>
+      {/* 2 — Bismillah */}
+      <RevealSection className="bismillah-section">
+        <div className="bismillah-glow" />
+        <p className="bismillah-text" dir="rtl" lang="ar">{BISMILLAH}</p>
+      </RevealSection>
 
-        <FloralDivider className="section-divider after-name" />
+      {/* 3 — Invitation text */}
+      <RevealSection className="invitation-section">
+        <p className="intro-line-grace">With the grace of Allah</p>
+        <p className="intro-line-grace">and the joy of two families coming together,</p>
+        <p className="intro-line-invite">we joyfully invite you to witness and celebrate</p>
+        <p className="nikah-of-line">the Nikah of</p>
+      </RevealSection>
 
-        <RevealSection className="events-grid" delay={1.4}>
-          {events.map((event) => (
-            <EventCard event={event} key={event.title} />
-          ))}
-        </RevealSection>
+      {/* 4 — Name */}
+      <RevealSection className="name-section">
+        <span className="name-asjad">Asjad</span>
+        <p className="bride-connector">with the daughter of</p>
+        <p className="bride-father">Mohammed Nishat (Gopalpur)</p>
+      </RevealSection>
 
-        <FloralDivider className="section-divider" />
+      {/* 5 — Floral divider */}
+      <FloralDivider />
 
-        <RevealSection className="countdown-section" delay={1.9}>
-          <p>until we say qubool hai</p>
-          <div className="countdown-grid">
-            <CountdownBox label="Days" value={countdown.days} />
-            <CountdownBox label="Hours" value={countdown.hours} />
-            <CountdownBox label="Minutes" value={countdown.minutes} />
-            <CountdownBox label="Seconds" value={countdown.seconds} />
-          </div>
-        </RevealSection>
+      {/* 6 — Event cards */}
+      <RevealSection className="events-section">
+        {events.map((ev) => (
+          <EventCard key={ev.title} event={ev} />
+        ))}
+      </RevealSection>
 
-        <div className="message-box-wrapper">
-          <RevealSection className="message-box" delay={2.3}>
-            <p>
-              <span style={{ fontWeight: 600, color: '#7D4F5E' }}>JazakAllah Khair</span> for being part
-              of this beautiful journey. it would mean{' '}
-              <span style={{ fontStyle: 'italic', fontWeight: 600 }}>everything</span> to have you there 💚
-            </p>
-          </RevealSection>
+      {/* 7 — Countdown */}
+      <RevealSection className="countdown-section" style={{ marginTop: '2rem' }}>
+        <p className="countdown-label">until we say qubool hai ✨</p>
+        <div className="countdown-grid">
+          <CountdownBox label="Days"    value={countdown.days} />
+          <CountdownBox label="Hours"   value={countdown.hours} />
+          <CountdownBox label="Minutes" value={countdown.minutes} />
+          <CountdownBox label="Seconds" value={countdown.seconds} />
         </div>
+      </RevealSection>
 
-        <RevealSection className="calendar-actions" delay={2.7}>
-          <ConfettiButton href={nikahCalLink}>✨ 📅 Save Nikah to Calendar</ConfettiButton>
-          <ConfettiButton href={receptionCalLink}>✨ 📅 Save Reception to Calendar</ConfettiButton>
-        </RevealSection>
+      {/* 8 — Personal message */}
+      <RevealSection style={{ marginTop: '2rem' }}>
+        <PersonalMessage />
+      </RevealSection>
 
-        <RevealSection className="footer-section" delay={3}>
-          <p className="made-with-love">August 2026 · with so much love</p>
-          <p className="dua-text" dir="rtl" lang="ar">{DUA}</p>
-          <p className="dua-translation">"Our Lord, grant us from among our spouses and offspring comfort to our eyes"</p>
-          <p className="surah">Surah Al-Furqan 25:74</p>
-        </RevealSection>
-      </div>
+      {/* 9 — Calendar buttons */}
+      <RevealSection className="calendar-section" style={{ marginTop: '2rem' }}>
+        <CalendarButton href={nikahCalLink}>✨ 📅  Save Nikah to Calendar</CalendarButton>
+        <CalendarButton href={receptionCalLink}>✨ 📅  Save Reception to Calendar</CalendarButton>
+      </RevealSection>
+
+      {/* 10 — Footer */}
+      <RevealSection className="footer-section">
+        <p className="made-with-love">August 2026 · with so much love</p>
+        <p className="dua-text" dir="rtl" lang="ar">{DUA}</p>
+        <p className="dua-translation">
+          "Our Lord, grant us from among our spouses and offspring comfort to our eyes"
+        </p>
+        <p className="surah-ref">Surah Al-Furqan 25:74</p>
+        <div className="footer-flowers">
+          <svg width="50" height="50" viewBox="0 0 70 70" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"   fill="#F0C4C4" opacity="0.8" />
+            <circle cx="22" cy="8"  r="3.5" fill="#C97B8A" opacity="0.6" />
+            <circle cx="8"  cy="22" r="3"   fill="#F5D4D4" opacity="0.7" />
+            <line x1="12" y1="12" x2="35" y2="35" stroke="#C97B8A" strokeWidth="1"   opacity="0.3" />
+            <line x1="22" y1="8"  x2="35" y2="35" stroke="#C97B8A" strokeWidth="0.8" opacity="0.25" />
+            <line x1="8"  y1="22" x2="35" y2="35" stroke="#C97B8A" strokeWidth="0.8" opacity="0.25" />
+            <circle cx="18" cy="6"  r="2" fill="#E8A0B0" opacity="0.5" />
+            <circle cx="6"  cy="18" r="2" fill="#E8A0B0" opacity="0.5" />
+          </svg>
+          <svg width="50" height="50" viewBox="0 0 70 70" aria-hidden="true" style={{ transform: 'rotate(90deg)' }}>
+            <circle cx="12" cy="12" r="5"   fill="#F0C4C4" opacity="0.8" />
+            <circle cx="22" cy="8"  r="3.5" fill="#C97B8A" opacity="0.6" />
+            <circle cx="8"  cy="22" r="3"   fill="#F5D4D4" opacity="0.7" />
+            <line x1="12" y1="12" x2="35" y2="35" stroke="#C97B8A" strokeWidth="1"   opacity="0.3" />
+            <line x1="22" y1="8"  x2="35" y2="35" stroke="#C97B8A" strokeWidth="0.8" opacity="0.25" />
+            <line x1="8"  y1="22" x2="35" y2="35" stroke="#C97B8A" strokeWidth="0.8" opacity="0.25" />
+            <circle cx="18" cy="6"  r="2" fill="#E8A0B0" opacity="0.5" />
+            <circle cx="6"  cy="18" r="2" fill="#E8A0B0" opacity="0.5" />
+          </svg>
+        </div>
+      </RevealSection>
+
     </div>
   )
 }
 
-export default function App() {
-  const [loading, setLoading] = useState(true)
-  const [opened, setOpened] = useState(false)
-  const [animDone, setAnimDone] = useState(false)
-  const [cursor, setCursor] = useState({ x: 0, y: 0, active: false })
-  const touchStartY = useRef(null)
-  const cursorTimer = useRef(null)
-  const countdown = useCountdown(NIKAH_DATE)
+// ─── App root ─────────────────────────────────────────────────────────────────
 
+export default function App() {
+  const [loading,  setLoading]  = useState(true)
+  const [opened,   setOpened]   = useState(false)
+  const [animDone, setAnimDone] = useState(false)
+  const [cursor,   setCursor]   = useState({ x: 0, y: 0, active: false })
+
+  const touchStartY  = useRef(null)
+  const cursorTimer  = useRef(null)
+  const countdown    = useCountdown(NIKAH_DATE)
+
+  // Initial load delay
   useEffect(() => {
     const id = setTimeout(() => setLoading(false), 1200)
     return () => clearTimeout(id)
   }, [])
 
+  // Scroll depth CSS var (drives subtle bg shift)
   useEffect(() => {
     function handleScroll() {
       const max = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1)
-      document.documentElement.style.setProperty('--scroll-depth', Math.min(window.scrollY / max, 1).toFixed(3))
+      document.documentElement.style.setProperty(
+        '--scroll-depth',
+        Math.min(window.scrollY / max, 1).toFixed(3),
+      )
     }
-
     handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Escape to close
   useEffect(() => {
-    function handleKeyDown(event) {
-      if (event.key === 'Escape' && animDone) {
-        closeCard()
-      }
+    function handleKeyDown(e) {
+      if (e.key === 'Escape' && animDone) closeCard()
     }
-
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [animDone])
 
+  // Cursor trail (desktop only)
   useEffect(() => {
-    function handleMouseMove(event) {
+    function handleMouseMove(e) {
       if (window.matchMedia('(pointer: coarse)').matches) return
-      setCursor({ x: event.clientX, y: event.clientY, active: true })
+      setCursor({ x: e.clientX, y: e.clientY, active: true })
       window.clearTimeout(cursorTimer.current)
-      cursorTimer.current = window.setTimeout(() => {
-        setCursor((current) => ({ ...current, active: false }))
-      }, 400)
+      cursorTimer.current = window.setTimeout(
+        () => setCursor((c) => ({ ...c, active: false })),
+        400,
+      )
     }
-
     window.addEventListener('mousemove', handleMouseMove)
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
@@ -495,7 +551,8 @@ export default function App() {
     if (opened) return
     playPaperRustle()
     setOpened(true)
-    setTimeout(() => setAnimDone(true), 1120)
+    const delay = window.innerWidth < 768 ? 900 : 1050
+    setTimeout(() => setAnimDone(true), delay)
   }
 
   function closeCard() {
@@ -503,47 +560,52 @@ export default function App() {
     window.setTimeout(() => setOpened(false), 40)
   }
 
-  function handleTouchStart(event) {
-    touchStartY.current = event.touches[0]?.clientY ?? null
+  function handleTouchStart(e) {
+    touchStartY.current = e.touches[0]?.clientY ?? null
   }
 
-  function handleTouchEnd(event) {
+  function handleTouchEnd(e) {
     if (!animDone || touchStartY.current == null) return
-    const endY = event.changedTouches[0]?.clientY ?? touchStartY.current
-    if (touchStartY.current - endY > 60) {
-      closeCard()
-    }
+    const endY = e.changedTouches[0]?.clientY ?? touchStartY.current
+    if (touchStartY.current - endY > 60) closeCard()
     touchStartY.current = null
   }
 
   return (
     <main className="app-shell" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+      {/* Faint paper texture */}
       <div className="floral-page-pattern" />
+
+      {/* Cursor trail */}
       <div className="cursor-trail" aria-hidden="true">
         {[0, 1, 2, 3].map((dot) => (
           <span
             key={dot}
             className={cursor.active ? 'active' : ''}
             style={{
-              '--x': `${cursor.x}px`,
-              '--y': `${cursor.y}px`,
+              '--x':     `${cursor.x}px`,
+              '--y':     `${cursor.y}px`,
               '--delay': `${dot * 50}ms`,
             }}
           />
         ))}
       </div>
+
+      {/* Floating petals */}
       <div className="petal-field" aria-hidden="true">
-        {petals.map((petal) => (
+        {petalData.map((p) => (
           <span
             className="petal"
-            key={petal.id}
+            key={p.id}
             style={{
-              '--left': petal.left,
-              '--delay': petal.delay,
-              '--duration': petal.duration,
-              '--drift': petal.drift,
-              '--petal-color': petal.color,
-              '--rotate': petal.rotate,
+              '--left':         p.left,
+              '--delay':        p.delay,
+              '--duration':     p.duration,
+              '--drift':        p.drift,
+              '--petal-color':  p.color,
+              '--rotate':       p.rotate,
+              '--size':         `${p.size}px`,
+              '--petal-opacity': p.opacity,
             }}
           />
         ))}
@@ -551,60 +613,78 @@ export default function App() {
 
       <AnimatePresence mode="wait">
         {loading ? (
+
+          /* ── Loading screen ── */
           <motion.div
             key="loader"
             className="loader"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.45 }}
           >
             <p dir="rtl" lang="ar">{BISMILLAH}</p>
           </motion.div>
+
         ) : !animDone ? (
+
+          /* ── Cover state ── */
           <motion.div
             key="closed-view"
             className={`closed-view ${opened ? 'is-opening' : ''}`}
-            exit={{ opacity: 0, transition: { duration: 0.35, delay: 0.5 } }}
+            exit={{ opacity: 0, transition: { duration: 0.35, delay: 0.4 } }}
           >
             <div className="card-scene">
               <div className="opening-card">
+                {/* Front face */}
                 <div className={`card-cover ${opened ? 'opened' : ''}`}>
-                  <CardFront onOpen={handleOpen} opened={opened} />
+                  <CardFront onOpen={handleOpen} />
                 </div>
+                {/* Back/preview face revealed during fold */}
                 <div className={`card-preview ${opened ? 'shadow-sweep' : ''}`}>
                   <FloralArch />
                   <p dir="rtl" lang="ar">{BISMILLAH}</p>
                 </div>
               </div>
             </div>
+
+            {/* "touch to open" prompt */}
             {!opened && (
-              <motion.button
-                type="button"
-                className="tap-prompt"
-                onClick={handleOpen}
+              <motion.div
+                className="tap-prompt-wrap"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1.5, duration: 0.8 }}
+                transition={{ delay: 1.5, duration: 0.6 }}
               >
-                touch to open
-              </motion.button>
+                <button
+                  type="button"
+                  className="tap-prompt"
+                  onClick={handleOpen}
+                  aria-label="Open invitation"
+                >
+                  ✦ touch to open ✦
+                </button>
+              </motion.div>
             )}
           </motion.div>
+
         ) : (
+
+          /* ── Inner invitation state ── */
           <motion.div
             key="open-content"
             className="content-view"
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            transition={{ duration: 0.55, ease: 'easeOut' }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
           >
-            <CardInside countdown={countdown} />
+            <InnerContent countdown={countdown} />
           </motion.div>
+
         )}
       </AnimatePresence>
     </main>

@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@playwright/test": "^1.60.0",
     "framer-motion": "^11.0.0",
+    "playwright": "^1.60.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
