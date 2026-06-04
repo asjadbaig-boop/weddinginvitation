@@ -121,28 +121,80 @@ function FloralCorner({ position, size = 70 }) {
   )
 }
 
-function CrescentIcon() {
+function FloralHeart() {
   return (
-    <div className="crescent-wrapper">
-      <div className="crescent-glow" />
+    <div className="floral-heart-container">
       <svg
-        width="72"
-        height="72"
-        viewBox="0 0 72 72"
+        className="floral-heart-svg"
+        width="110"
+        height="100"
+        viewBox="0 0 110 100"
         fill="none"
         aria-hidden="true"
-        style={{
-          display: 'block',
-          margin: '0 auto',
-          overflow: 'visible',
-          filter: 'drop-shadow(0 0 12px rgba(201,123,138,0.4))',
-        }}
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <path
-          d="M42 10C28.5 10 18 21 18 36C18 51 28.5 62 42 62C35 62 25 55 23 45C21 35 26 24 35 19C38.5 16.5 43 15.5 47 15.5C45.5 13 43.5 10.5 42 10Z"
-          fill="#C97B8A"
-        />
-        <circle cx="50" cy="18" r="5.5" fill="#C97B8A" />
+        {/* Main heart shape */}
+        <path d="M55 85 C55 85 15 58 15 33 C15 20 25 12 35 12 C43 12 50 17 55 24 C60 17 67 12 75 12 C85 12 95 20 95 33 C95 58 55 85 55 85Z"
+          fill="#F5D4D4" opacity="0.5" stroke="#C97B8A" strokeWidth="1.5" />
+
+        {/* Rose center */}
+        <circle cx="55" cy="46" r="7"   fill="#C97B8A" opacity="0.8" />
+        <circle cx="55" cy="46" r="4.5" fill="#9B4F63" opacity="0.7" />
+        <circle cx="53" cy="44" r="1.5" fill="white"   opacity="0.4" />
+
+        {/* Rose petals */}
+        <ellipse cx="55" cy="37" rx="4" ry="5.5" fill="#C97B8A" opacity="0.5" transform="rotate(0 55 46)" />
+        <ellipse cx="55" cy="37" rx="4" ry="5.5" fill="#C97B8A" opacity="0.5" transform="rotate(45 55 46)" />
+        <ellipse cx="55" cy="37" rx="4" ry="5.5" fill="#C97B8A" opacity="0.5" transform="rotate(90 55 46)" />
+        <ellipse cx="55" cy="37" rx="4" ry="5.5" fill="#C97B8A" opacity="0.5" transform="rotate(135 55 46)" />
+        <ellipse cx="55" cy="37" rx="4" ry="5.5" fill="#C97B8A" opacity="0.5" transform="rotate(180 55 46)" />
+        <ellipse cx="55" cy="37" rx="4" ry="5.5" fill="#C97B8A" opacity="0.5" transform="rotate(225 55 46)" />
+        <ellipse cx="55" cy="37" rx="4" ry="5.5" fill="#C97B8A" opacity="0.5" transform="rotate(270 55 46)" />
+        <ellipse cx="55" cy="37" rx="4" ry="5.5" fill="#C97B8A" opacity="0.5" transform="rotate(315 55 46)" />
+
+        {/* Small roses — left side */}
+        <circle cx="25" cy="30" r="4.5" fill="#F0C4C4" opacity="0.8" />
+        <circle cx="25" cy="30" r="2.5" fill="#C97B8A" opacity="0.7" />
+        <circle cx="20" cy="42" r="3.5" fill="#F0C4C4" opacity="0.7" />
+        <circle cx="20" cy="42" r="2"   fill="#C97B8A" opacity="0.6" />
+        <circle cx="27" cy="55" r="3"   fill="#F0C4C4" opacity="0.7" />
+        <circle cx="27" cy="55" r="1.8" fill="#C97B8A" opacity="0.6" />
+
+        {/* Small roses — right side */}
+        <circle cx="85" cy="30" r="4.5" fill="#F0C4C4" opacity="0.8" />
+        <circle cx="85" cy="30" r="2.5" fill="#C97B8A" opacity="0.7" />
+        <circle cx="90" cy="42" r="3.5" fill="#F0C4C4" opacity="0.7" />
+        <circle cx="90" cy="42" r="2"   fill="#C97B8A" opacity="0.6" />
+        <circle cx="83" cy="55" r="3"   fill="#F0C4C4" opacity="0.7" />
+        <circle cx="83" cy="55" r="1.8" fill="#C97B8A" opacity="0.6" />
+
+        {/* Top humps */}
+        <circle cx="36" cy="14" r="4"   fill="#F0C4C4" opacity="0.8" />
+        <circle cx="36" cy="14" r="2.2" fill="#C97B8A" opacity="0.7" />
+        <circle cx="74" cy="14" r="4"   fill="#F0C4C4" opacity="0.8" />
+        <circle cx="74" cy="14" r="2.2" fill="#C97B8A" opacity="0.7" />
+
+        {/* Bottom tip */}
+        <circle cx="55" cy="83" r="4"   fill="#F0C4C4" opacity="0.8" />
+        <circle cx="55" cy="83" r="2.2" fill="#C97B8A" opacity="0.7" />
+
+        {/* Leaf accents */}
+        <ellipse cx="18" cy="35" rx="4" ry="2" fill="#C49BAA" opacity="0.4" transform="rotate(-30 18 35)" />
+        <ellipse cx="92" cy="35" rx="4" ry="2" fill="#C49BAA" opacity="0.4" transform="rotate(30 92 35)" />
+        <ellipse cx="40" cy="75" rx="4" ry="2" fill="#C49BAA" opacity="0.4" transform="rotate(-45 40 75)" />
+        <ellipse cx="70" cy="75" rx="4" ry="2" fill="#C49BAA" opacity="0.4" transform="rotate(45 70 75)" />
+
+        {/* Sparkle dots */}
+        <circle className="heart-sparkle" style={{ animationDelay: '0s' }}
+          cx="10" cy="20" r="2"   fill="#C97B8A" opacity="0.4" />
+        <circle className="heart-sparkle" style={{ animationDelay: '0.4s' }}
+          cx="100" cy="20" r="2"  fill="#C97B8A" opacity="0.4" />
+        <circle className="heart-sparkle" style={{ animationDelay: '0.8s' }}
+          cx="55" cy="8" r="2.5"  fill="#F0C4C4" opacity="0.6" />
+        <circle className="heart-sparkle" style={{ animationDelay: '1.2s' }}
+          cx="15" cy="60" r="1.8" fill="#C97B8A" opacity="0.35" />
+        <circle className="heart-sparkle" style={{ animationDelay: '1.6s' }}
+          cx="95" cy="60" r="1.8" fill="#C97B8A" opacity="0.35" />
       </svg>
     </div>
   )
@@ -389,7 +441,7 @@ function CardFront({ onOpen }) {
       <div className="closed-inner-border" />
       <div className="closed-card-content">
         <p className="closed-bismillah" dir="rtl" lang="ar">{BISMILLAH}</p>
-        <CrescentIcon />
+        <FloralHeart />
         <CoverDivider />
         <p className="closed-subtitle">a wedding invitation</p>
         <p className="closed-monogram">Asjad · 2026</p>
