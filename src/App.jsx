@@ -125,14 +125,24 @@ function CrescentIcon() {
   return (
     <div className="crescent-wrapper">
       <div className="crescent-glow" />
-      <svg width="60" height="72" viewBox="0 0 60 72" fill="none" aria-hidden="true">
+      <svg
+        width="72"
+        height="72"
+        viewBox="0 0 72 72"
+        fill="none"
+        aria-hidden="true"
+        style={{
+          display: 'block',
+          margin: '0 auto',
+          overflow: 'visible',
+          filter: 'drop-shadow(0 0 12px rgba(201,123,138,0.4))',
+        }}
+      >
         <path
-          d="M38 8C24 8 13 20 13 36C13 52 24 64 38 64
-             C30 64 21 57 19 47C17 37 22 26 31 21
-             C35 18 40 17 44 17C42 14 40 10 38 8Z"
+          d="M42 10C28.5 10 18 21 18 36C18 51 28.5 62 42 62C35 62 25 55 23 45C21 35 26 24 35 19C38.5 16.5 43 15.5 47 15.5C45.5 13 43.5 10.5 42 10Z"
           fill="#C97B8A"
         />
-        <circle cx="46" cy="17" r="5" fill="#C97B8A" />
+        <circle cx="50" cy="18" r="5.5" fill="#C97B8A" />
       </svg>
     </div>
   )
@@ -414,7 +424,7 @@ function InnerContent({ countdown }) {
       </RevealSection>
 
       {/* 4 — Name */}
-      <RevealSection className="name-section">
+      <RevealSection className="name-section" style={{ overflow: 'visible', paddingBottom: '12px' }}>
         <span className="name-asjad">Asjad</span>
         <p className="bride-connector">with the daughter of</p>
         <p className="bride-father">Mohammed Nishat (Gopalpur)</p>

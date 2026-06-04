@@ -168,19 +168,23 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1rem;
+  padding: 1rem;
+  overflow: visible;
 }
 
 /* ─── Cover card stage ─── */
 .card-scene {
   width: min(82vw, 380px);
   perspective: 1200px;
+  overflow: visible;
 }
 
 .opening-card {
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 3;
+  height: min(calc(min(82vw, 380px) * 1.5), 88vh);
+  max-height: 88vh;
+  overflow: visible;
   transform-style: preserve-3d;
   animation: paperFloat 4s ease-in-out infinite;
 }
@@ -252,7 +256,7 @@ a {
   display: block;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   border: none;
   border-radius: 4px;
   background: var(--white-warm);
@@ -290,9 +294,10 @@ a {
   height: 100%;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   padding: 28px 24px;
   text-align: center;
+  overflow: visible;
 }
 
 /* Bismillah on cover card */
@@ -313,7 +318,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
+  width: 72px;
   height: 72px;
   margin: 0 auto;
   overflow: visible;
@@ -321,8 +326,8 @@ a {
 
 .crescent-glow {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(201, 123, 138, 0.15) 0%, transparent 70%);
   top: 50%;
@@ -391,7 +396,7 @@ a {
 
 /* ─── Tap prompt ─── */
 .tap-prompt-wrap {
-  margin-top: 1.4rem;
+  margin-top: 16px;
 }
 
 .tap-prompt {
@@ -511,6 +516,7 @@ a {
 .name-section {
   text-align: center;
   margin: 32px 0 16px;
+  padding-bottom: 12px;
   overflow: visible;
 }
 
@@ -521,8 +527,10 @@ a {
   font-style: italic;
   font-weight: 700;
   letter-spacing: 0.05em;
-  line-height: 1.1;
+  line-height: 1.2;
+  padding-bottom: 0.25em;
   text-align: center;
+  overflow: visible;
   background: linear-gradient(90deg, var(--rose-deep), #D4849A 50%, var(--rose-deep));
   background-size: 200% auto;
   -webkit-background-clip: text;
