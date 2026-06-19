@@ -616,8 +616,7 @@ function InnerContent({ countdown }) {
       {/* 4 — Name */}
       <RevealSection className="name-section" style={{ overflow: 'visible', paddingBottom: '12px' }}>
         <span className="name-asjad">Asjad</span>
-        <p className="groom-lineage">the only son of Amina Khatun</p>
-        <p className="groom-lineage groom-lineage-last">and the late Mirza Afzal Baig</p>
+        <p className="groom-lineage groom-lineage-last">son of the late Mirza Afzal Baig</p>
         <p className="bride-connector">with the daughter of</p>
         <p className="bride-father">Mohammed Nishat (Gopalpur)</p>
       </RevealSection>
