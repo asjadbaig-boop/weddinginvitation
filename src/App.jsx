@@ -3,27 +3,18 @@ import { AnimatePresence, motion, useInView } from 'framer-motion'
 
 const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ'
 const DUA = 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ'
-const NIKAH_DATE = '2026-08-20T00:00:00+05:30'
+const RECEPTION_DATE = '2026-08-23T00:00:00+05:30'
 
-const nikahCalLink =
-  'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Asjad%27s+Nikah&dates=20260820T000000/20260820T235900&details=Nikah+Ceremony&location=Berhampur+Indoor+Hall+Berhampur+Odisha'
 const receptionCalLink =
   'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Asjad%27s+Reception&dates=20260823T000000/20260823T235900&details=Reception+Ceremony&location=Function+Palace+Berhampur+Odisha'
 
 const events = [
   {
-    label: 'N I K A H',
-    title: 'Nikah',
-    day: 'Wednesday, August 20, 2026',
-    venue: 'Berhampur Indoor Hall, Berhampur',
-    map: 'https://www.google.com/maps/search/Berhampur+Indoor+Hall+Berhampur+Odisha',
-  },
-  {
     label: 'R E C E P T I O N',
     title: 'Reception',
-    day: 'Saturday, August 23, 2026',
+    day: 'Sunday, August 23, 2026',
     venue: 'Function Palace, Berhampur',
-    map: 'https://www.google.com/maps/search/Function+Palace+Berhampur+Odisha',
+    map: 'https://maps.app.goo.gl/7FdcjgT5ZPxxwBLv7',
   },
 ]
 
@@ -558,8 +549,8 @@ function InnerContent({ countdown }) {
       <RevealSection className="invitation-section">
         <p className="intro-line-grace">With the grace of Allah</p>
         <p className="intro-line-grace">and the joy of two families coming together,</p>
-        <p className="intro-line-invite">we joyfully invite you to witness and celebrate</p>
-        <p className="nikah-of-line">the Nikah of</p>
+        <p className="intro-line-invite">we joyfully invite you to celebrate</p>
+        <p className="reception-of-line">the Reception of</p>
       </RevealSection>
 
       {/* 4 — Name */}
@@ -582,7 +573,7 @@ function InnerContent({ countdown }) {
       {/* 7 — Countdown */}
       <RevealSection className="countdown-section" style={{ marginTop: '2rem' }}>
         <p className="countdown-label">
-          until we say qubool hai
+          until the daawat begins
           <IconSparkle size={16} />
         </p>
         <div className="countdown-grid">
@@ -600,7 +591,6 @@ function InnerContent({ countdown }) {
 
       {/* 9 — Calendar buttons */}
       <RevealSection className="calendar-section" style={{ marginTop: '2rem' }}>
-        <CalendarButton href={nikahCalLink}>Save Nikah to Calendar</CalendarButton>
         <CalendarButton href={receptionCalLink}>Save Reception to Calendar</CalendarButton>
       </RevealSection>
 
@@ -650,7 +640,7 @@ export default function App() {
 
   const touchStartY  = useRef(null)
   const cursorTimer  = useRef(null)
-  const countdown    = useCountdown(NIKAH_DATE)
+  const countdown    = useCountdown(RECEPTION_DATE)
 
   // Initial load delay
   useEffect(() => {

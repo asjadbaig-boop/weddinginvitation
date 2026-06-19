@@ -44,7 +44,7 @@ const checks = await page.evaluate(() => ({
   ivory: getComputedStyle(document.documentElement).getPropertyValue('--ivory').trim(),
   rose: getComputedStyle(document.documentElement).getPropertyValue('--rose').trim(),
   nameText: document.querySelector('.name-asjad')?.textContent,
-  nikahTitle: [...document.querySelectorAll('.event-title')].map(e => e.textContent),
+  eventTitles: [...document.querySelectorAll('.event-title')].map(e => e.textContent),
   hasWalima: document.body.textContent.includes('Walima'),
   countdownLabel: document.querySelector('.countdown-label')?.textContent,
   duaText: document.querySelector('.dua-text')?.textContent?.slice(0, 20),

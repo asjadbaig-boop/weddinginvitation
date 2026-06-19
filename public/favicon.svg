@@ -1,0 +1,44 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="32" fill="#FDF6F0"/>
+
+  <!-- Stem -->
+  <path d="M32 40 L32 56" stroke="#9B7070" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- Leaves -->
+  <path d="M32 49 C26 48 22 44 23 40 C29 40 33 44 32 49Z" fill="#A8957E" opacity="0.85"/>
+  <path d="M32 46 C38 45 42 41 41 37 C35 37 31 41 32 46Z" fill="#B8A893" opacity="0.75"/>
+
+  <!-- Rose bloom: petals radiating outward from center, all pointing away from middle -->
+  <!-- Back layer petals (larger, lighter) -->
+  <g fill="#D89BAA">
+    <ellipse cx="32" cy="18" rx="6.5" ry="9" transform="rotate(0 32 27)"/>
+    <ellipse cx="32" cy="18" rx="6.5" ry="9" transform="rotate(60 32 27)"/>
+    <ellipse cx="32" cy="18" rx="6.5" ry="9" transform="rotate(120 32 27)"/>
+    <ellipse cx="32" cy="18" rx="6.5" ry="9" transform="rotate(180 32 27)"/>
+    <ellipse cx="32" cy="18" rx="6.5" ry="9" transform="rotate(240 32 27)"/>
+    <ellipse cx="32" cy="18" rx="6.5" ry="9" transform="rotate(300 32 27)"/>
+  </g>
+
+  <!-- Middle layer petals (medium, rose) -->
+  <g fill="#C97B8A">
+    <ellipse cx="32" cy="21" rx="5" ry="7" transform="rotate(30 32 27)"/>
+    <ellipse cx="32" cy="21" rx="5" ry="7" transform="rotate(90 32 27)"/>
+    <ellipse cx="32" cy="21" rx="5" ry="7" transform="rotate(150 32 27)"/>
+    <ellipse cx="32" cy="21" rx="5" ry="7" transform="rotate(210 32 27)"/>
+    <ellipse cx="32" cy="21" rx="5" ry="7" transform="rotate(270 32 27)"/>
+    <ellipse cx="32" cy="21" rx="5" ry="7" transform="rotate(330 32 27)"/>
+  </g>
+
+  <!-- Inner layer petals (small, deep rose) -->
+  <g fill="#9B4F63">
+    <ellipse cx="32" cy="24" rx="3.6" ry="5" transform="rotate(0 32 27)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="5" transform="rotate(72 32 27)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="5" transform="rotate(144 32 27)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="5" transform="rotate(216 32 27)"/>
+    <ellipse cx="32" cy="24" rx="3.6" ry="5" transform="rotate(288 32 27)"/>
+  </g>
+
+  <!-- Center bud -->
+  <circle cx="32" cy="27" r="3.4" fill="#6B2D3E"/>
+  <circle cx="32" cy="27" r="1.6" fill="#4A1E2A"/>
+</svg>
