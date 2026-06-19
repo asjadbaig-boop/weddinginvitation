@@ -947,6 +947,40 @@ a:focus-visible {
   padding: 0 4px;
 }
 
+/* ─── Mute / unmute toggle button ─── */
+.mute-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: 0 2px 12px rgba(201, 123, 138, 0.18);
+  cursor: pointer;
+  transition: transform 100ms ease-out, box-shadow 200ms ease-out;
+}
+
+.mute-btn .icon {
+  color: var(--color-primary);
+}
+
+.mute-btn:hover {
+  box-shadow: 0 4px 18px rgba(201, 123, 138, 0.28);
+}
+
+.mute-btn:active {
+  transform: scale(0.95);
+}
+
 /* ─── Responsive ─── */
 @media (min-width: 640px) {
   .countdown-grid {

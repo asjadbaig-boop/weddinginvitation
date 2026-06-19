@@ -5,6 +5,9 @@ const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّ
 const DUA = 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ'
 const RECEPTION_DATE = '2026-08-23T00:00:00+05:30'
 
+// Background nasheed — file lives in /public; encodeURI handles spaces & parentheses
+const NASHEED_SRC = encodeURI('/Wedding Nasheed Muhammad Al Muqit (English Lyrics).mp3')
+
 const receptionCalLink =
   'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Asjad%27s+Reception&dates=20260823T000000/20260823T235900&details=Reception+Ceremony&location=Function+Palace+Berhampur+Odisha'
 
@@ -13,7 +16,7 @@ const events = [
     label: 'R E C E P T I O N',
     title: 'Reception',
     day: 'Sunday, August 23, 2026',
-    venue: 'Function Palace, Berhampur',
+    venue: 'Sagar Mandap, Cuttack',
     map: 'https://maps.app.goo.gl/7FdcjgT5ZPxxwBLv7',
   },
 ]
@@ -362,6 +365,63 @@ function IconFlower({ size = 18 }) {
   )
 }
 
+function IconSpeaker({ size = 18 }) {
+  return (
+    <svg
+      className="icon"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor" />
+      <path d="M16 9a3 3 0 0 1 0 6" />
+      <path d="M18.5 6.5a6.5 6.5 0 0 1 0 11" />
+    </svg>
+  )
+}
+
+function IconSpeakerMuted({ size = 18 }) {
+  return (
+    <svg
+      className="icon"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor" />
+      <line x1="16.5" y1="9" x2="22" y2="14.5" />
+      <line x1="22" y1="9" x2="16.5" y2="14.5" />
+    </svg>
+  )
+}
+
+// ─── Mute / unmute toggle (visible only after card opens) ─────────────────────
+
+function MuteButton({ muted, onToggle }) {
+  return (
+    <button
+      type="button"
+      className="mute-btn"
+      onClick={onToggle}
+      aria-label={muted ? 'Unmute background music' : 'Mute background music'}
+    >
+      {muted ? <IconSpeakerMuted size={18} /> : <IconSpeaker size={18} />}
+    </button>
+  )
+}
+
 // ─── Motion wrapper ───────────────────────────────────────────────────────────
 
 function RevealSection({ children, className = '', style }) {
@@ -636,16 +696,32 @@ export default function App() {
   const [loading,  setLoading]  = useState(true)
   const [opened,   setOpened]   = useState(false)
   const [animDone, setAnimDone] = useState(false)
+  const [muted,    setMuted]    = useState(false)
   const [cursor,   setCursor]   = useState({ x: 0, y: 0, active: false })
 
   const touchStartY  = useRef(null)
   const cursorTimer  = useRef(null)
+  const audioRef     = useRef(null)
   const countdown    = useCountdown(RECEPTION_DATE)
 
   // Initial load delay
   useEffect(() => {
     const id = setTimeout(() => setLoading(false), 1200)
     return () => clearTimeout(id)
+  }, [])
+
+  // Background nasheed — created once, cleaned up on unmount
+  useEffect(() => {
+    const audio = new Audio(NASHEED_SRC)
+    audio.loop = true
+    audio.volume = 0.25
+    audio.preload = 'auto'
+    audioRef.current = audio
+    return () => {
+      audio.pause()
+      audio.src = ''
+      audioRef.current = null
+    }
   }, [])
 
   // Scroll depth CSS var (drives subtle bg shift)
@@ -692,14 +768,32 @@ export default function App() {
   function handleOpen() {
     if (opened) return
     playPaperRustle()
+    // Start the nasheed inside the same user gesture so mobile browsers allow it.
+    // Resumes from where it left off if the card was previously closed.
+    const audio = audioRef.current
+    if (audio) {
+      const playPromise = audio.play()
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {}) // fail silently — never block the card opening
+      }
+    }
     setOpened(true)
     const delay = window.innerWidth < 768 ? 900 : 1050
     setTimeout(() => setAnimDone(true), delay)
   }
 
   function closeCard() {
+    audioRef.current?.pause()
     setAnimDone(false)
     window.setTimeout(() => setOpened(false), 40)
+  }
+
+  function toggleMute() {
+    setMuted((prev) => {
+      const next = !prev
+      if (audioRef.current) audioRef.current.muted = next
+      return next
+    })
   }
 
   function handleTouchStart(e) {
@@ -831,6 +925,9 @@ export default function App() {
 
         )}
       </AnimatePresence>
+
+      {/* Mute toggle — only in the inner invitation state */}
+      {animDone && <MuteButton muted={muted} onToggle={toggleMute} />}
     </main>
   )
 }
