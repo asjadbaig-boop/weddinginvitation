@@ -30,13 +30,13 @@
   --color-petal-d:       #F7D4D4;
 
   /* ─── Type scale ─── */
-  --text-xs:   clamp(0.7rem, 2.5vw, 0.75rem);  /* labels, footnotes */
-  --text-sm:   clamp(0.85rem, 3vw, 0.95rem);   /* secondary body */
-  --text-base: clamp(0.95rem, 3.2vw, 1.05rem); /* body copy */
-  --text-lg:   clamp(1.1rem, 4vw, 1.3rem);     /* sub-headings */
-  --text-xl:   clamp(1.5rem, 6vw, 2rem);       /* section headers */
-  --text-2xl:  clamp(2.2rem, 8vw, 2.8rem);     /* dua, large arabic */
-  --text-name: clamp(3.5rem, 14vw, 5.5rem);    /* the name Asjad */
+  --text-xs:   clamp(0.78rem, 2.8vw, 0.85rem); /* labels, footnotes */
+  --text-sm:   clamp(0.95rem, 3.4vw, 1.05rem); /* secondary body */
+  --text-base: clamp(1.05rem, 3.6vw, 1.15rem); /* body copy — main readability fix */
+  --text-lg:   clamp(1.25rem, 4.5vw, 1.45rem); /* sub-headings */
+  --text-xl:   clamp(1.65rem, 6.5vw, 2.1rem);  /* section headers */
+  --text-2xl:  clamp(2.3rem, 8.5vw, 2.9rem);   /* dua, large arabic */
+  --text-name: clamp(3.6rem, 14vw, 5.5rem);    /* the name Asjad — minor bump only */
 
   --scroll-depth: 0;
 }
@@ -429,22 +429,38 @@ a:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: none;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
   background: transparent;
   color: var(--color-primary);
   font-family: 'Lato', sans-serif;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   font-style: italic;
   font-weight: 300;
   letter-spacing: 0.15em;
   text-align: center;
   cursor: pointer;
-  padding: 12px 20px;
+  padding: 8px 20px;
+  transition: border-color 200ms ease, transform 200ms ease;
 }
 
 .tap-prompt:active {
   transform: scale(0.98);
   transition: transform 100ms ease;
+}
+
+/* Device-adaptive prompt label: touch by default, click on hover-capable desktop */
+.open-prompt-touch { display: inline; }
+.open-prompt-click { display: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  .open-prompt-touch { display: none; }
+  .open-prompt-click { display: inline; }
+
+  .tap-prompt:hover {
+    border-color: var(--color-primary);
+    transform: scale(1.03);
+  }
 }
 
 @keyframes tapPulse {

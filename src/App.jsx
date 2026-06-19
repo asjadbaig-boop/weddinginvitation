@@ -900,7 +900,8 @@ export default function App() {
                   aria-label="Open invitation"
                 >
                   <IconSparkle size={14} />
-                  touch to open
+                  <span className="open-prompt-touch">touch to open</span>
+                  <span className="open-prompt-click">click to open</span>
                   <IconSparkle size={14} />
                 </button>
               </motion.div>
